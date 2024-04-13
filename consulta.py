@@ -2,6 +2,11 @@
 import requests
 import sqlite3
 import datetime
+import os
+
+def obtener_ruta_base_datos():
+    ruta = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(ruta, 'dbs', 'binance.db')
 
 def obtener_metrica_btc():
     url = 'https://api.binance.com/api/v3/ticker/24hr'
@@ -22,9 +27,9 @@ def obtener_metrica_btc():
     else:
         print(f"Error al obtener las metricas y/o datos: {respuesta.status_code}")
 
-def crear_basecita():
+def crear_basecita(ruta_base_datos):
     try:
-        conexion = sqlite3.connect("/home/richie2024/Proyectos/binance/dbs/binance.db")
+        conexion = sqlite3.connect(ruta_base_datos)
         cursor = conexion.cursor()
 
         cursor.execute('''CREATE TABLE IF NOT EXISTS bitcoin(
@@ -38,9 +43,9 @@ def crear_basecita():
     except sqlite3.Error as e:
         print(f"Error al crear la tabla: {e}")
 
-def guardar_datos(lastPrice, fecha_actual):
+def guardar_datos(lastPrice, fecha_actual, ruta_base_datos):
     try:
-        conexion = sqlite3.connect("/home/richie2024/Proyectos/binance/dbs/binance.db")
+        conexion = sqlite3.connect(ruta_base_datos)
         cursor = conexion.cursor()
 
         cursor.execute("INSERT INTO bitcoin (price, fecha) VALUES (?,?)", (lastPrice, fecha_actual))
@@ -55,6 +60,7 @@ def guardar_datos(lastPrice, fecha_actual):
 lastPrice = obtener_metrica_btc()
 
 if lastPrice is not None:
+    ruta_base_datos = obtener_ruta_base_datos()
     fecha_actual = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    crear_basecita()
-    guardar_datos(lastPrice, fecha_actual)
+    crear_basecita(ruta_base_datos)
+    guardar_datos(lastPrice, fecha_actual, ruta_base_datos)
