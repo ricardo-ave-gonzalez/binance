@@ -9,27 +9,36 @@
 # Imprimimos el resultado
 # print("La aceleración del objeto es:", aceleracion, "m/s^2")
 
+
+def calcular_masa(fuerza_neta, aceleracion):
+    """
+    Calcula la masa de un objeto dado su fuerza neta y su aceleración.
+    """
+    masa =  fuerza_neta / aceleracion
+    return masa
+
 def calcular_aceleracion(fuerza_neta, masa):
     """
     Calcula la aceleración de un objeto dado su fuerza neta y su masa.
-
-    Args:
-    - fuerza_neta (float): La fuerza neta aplicada sobre el objeto (en Newtons).
-    - masa (float): La masa del objeto (en kilogramos).
-
-    Returns:
-    - aceleracion (float): La aceleración del objeto (en m/s^2).
     """
     aceleracion = fuerza_neta / masa
     return aceleracion
 
 def main():
+    print("--------------------------------------------------------------------------------")
     print("Este programa calcula la aceleración de un objeto dado su fuerza neta y su masa.")
     fuerza_neta = float(input("Ingrese la fuerza neta aplicada sobre el objeto (en Newtons): "))
     masa = float(input("Ingrese la masa del objeto (en kilogramos): "))
 
     aceleracion = calcular_aceleracion(fuerza_neta, masa)
-    print("La aceleración del objeto es:", aceleracion, "m/s^2")
+    print("La aceleración del objeto es:", round(aceleracion), "m/s^2")
 
+    print("----------------------------------------------------------------------------------")
+    print("Este programa calcula la masa de un objeto dado su fuerza neta y su aceleracion.")
+    fuerza_neta = float(input("Ingrese la fuerza neta aplicada sobre el objet (en Newtons):"))
+    acelaracion = float(input("Ingrese la aceleracion del objeto en metros por segundo al cuadrado:"))
+
+    masa = calcular_masa(fuerza_neta,acelaracion)
+    print("La masa del objeto es de :", round(masa), "kilogramos")
 if __name__ == "__main__":
     main()
