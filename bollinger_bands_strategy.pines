@@ -1,0 +1,42 @@
+//@version=5
+strategy(shorttitle="Demo GPT - Bollinger Bands", title="Demo GPT - Bollinger Bands Strategy", overlay=true)
+
+// Inputs
+length = input.int(20, minval=1)
+maType = input.string("SMA", "Basis MA Type", options=["SMA", "EMA", "SMMA (RMA)", "WMA"])
+src = input(close, title="Source")
+mult = input.float(2.0, minval=0.001, maxval=50, title="StdDev")
+
+offset = input.int(0, "Offset", minval=-500, maxval=500, display=display.data_window)
+start_date = input.time(timestamp("01 Jan 1970 00:00 +0000"), title="Start Date")
+end_date = input.time(timestamp("31 Dec 2069 23:59 +0000"), title="End Date")
+
+// Moving average function
+ma(source, length, type) =>
+    switch type
+        "SMA" => ta.sma(source, length)
+        "EMA" => ta.ema(source, length)
+        "SMMA (RMA)" => ta.rma(source, length)
+        "WMA" => ta.wma(source, length)
+
+basis = ma(src, length, maType)
+dev = mult * ta.stdev(src, length)
+upper = basis + dev
+lower = basis - dev
+
+// Plots
+plot_basis = plot(basis, "Basis", color=color.new(#2962FF, 0), offset=offset)
+plot_upper = plot(upper, "Upper", color=color.new(#FF2365, 0), offset=offset)
+plot_lower = plot(lower, "Lower", color=color.new(#089981, 0), offset=offset)
+fill(plot1=plot_upper, plot2=plot_lower, title="Background", color=color.new(color.rgb(33, 150, 243), 95))
+
+// Strategy Logic
+if (time >= start_date and time <= end_date)
+    long_condition = ta.crossover(src, lower)
+    if (long_condition)
+        strategy.entry("Long", strategy.long, when=long_condition)
+
+    strategy.close("Long", when=ta.crossunder(src, upper))
+
+// Strategy Settings
+strategy.close_all(when=(time > end_date))
